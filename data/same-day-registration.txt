@@ -3,6 +3,7 @@ https://www.ncsl.org/research/elections-and-campaigns/same-day-registration.aspx
 ---
 yes 1
 ---
+USAF N/A
 AL
 AK
 AS

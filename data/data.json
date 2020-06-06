@@ -1,5 +1,6 @@
 {
   "states": [
+    {"name": "United States Armed Forces", "abbreviation": "USAF", "voteByMail": {"score": 2, "tags": ["yes"]}, "votingCenters": {"score": null, "tags": ["N/A"]}, "rankedChoice": {"score": null, "tags": ["N/A"]}, "sameDayRegistration": {"score": null, "tags": ["N/A"]}, "score": 2},
     {"name": "Alabama", "abbreviation": "AL", "voteByMail": {"score": 0, "tags": []}, "votingCenters": {"score": 0, "tags": []}, "rankedChoice": {"score": 0, "tags": []}, "sameDayRegistration": {"score": 0, "tags": []}, "score": 0},
     {"name": "Alaska", "abbreviation": "AK", "voteByMail": {"score": 0, "tags": []}, "votingCenters": {"score": 0, "tags": []}, "rankedChoice": {"score": 1, "tags": ["presidential-primary"]}, "sameDayRegistration": {"score": 0, "tags": []}, "score": 1},
     {"name": "American Samoa", "abbreviation": "AS", "voteByMail": {"score": 0, "tags": []}, "votingCenters": {"score": 0, "tags": []}, "rankedChoice": {"score": 0, "tags": []}, "sameDayRegistration": {"score": 0, "tags": []}, "score": 0},

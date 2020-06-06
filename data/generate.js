@@ -34,7 +34,7 @@ function collect(path) {
   }
 
   const statesData = stateData.map(text => {
-    let [, abbreviation, tags, notes] = text.match(/(\w\w) ?([^#]+)?#?(.*)?/);
+    let [, abbreviation, tags, notes] = text.match(/(\w{2,4}) ?([^#]+)?#?(.*)?/);
     tags = tags ? tags.split(' ').filter(Boolean) : [];
     if (notes) notes = notes.trim();
 
@@ -69,7 +69,7 @@ process('rankedChoice', __dirname + '/ranked-choice.txt');
 process('sameDayRegistration', __dirname + '/same-day-registration.txt');
 
 for (const state of data.states) {
-  state.score = ['voteByMail', 'votingCenters', 'rankedChoice', 'sameDayRegistration'].reduce((acc, cur) => acc + state[cur].score, 0);
+  state.score = ['voteByMail', 'votingCenters', 'rankedChoice', 'sameDayRegistration'].reduce((acc, cur) => acc + (state[cur].score || 0), 0);
 }
 
 fs.writeFileSync(`${__dirname}/data.json`, stringify(data, {maxLength:1000}));
