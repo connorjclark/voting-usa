@@ -4,7 +4,7 @@ const states = require('./states.json');
 
 const data = {
   states: [...states],
-  sources: [],
+  categories: [],
 }
 
 function partitionBy(arr, key) {
@@ -46,13 +46,13 @@ function collect(path) {
     };
   });
 
-  return {statesData, sources};
+  return {statesData, sources, scoring};
 }
 
 function process(property, path) {
-  const {statesData, sources} = collect(path);
+  const {statesData, sources, scoring} = collect(path);
 
-  data.sources.push({name: property, text: sources});
+  data.categories.push({name: property, sources, scoring});
 
   for (const item of statesData) {
     data.states.find(s => s.abbreviation === item.abbreviation)[property] = {
@@ -68,8 +68,29 @@ process('votingCenters', __dirname + '/vote-centers.txt');
 process('rankedChoice', __dirname + '/ranked-choice.txt');
 process('sameDayRegistration', __dirname + '/same-day-registration.txt');
 
+const weights = {
+  voteByMail: 5,
+  rankedChoice: 4,
+  sameDayRegistration: 3,
+  votingCenters: 2,
+};
+function calculateScore(state) {
+  const totalWeight = Object.values(weights).reduce((acc, cur) => acc + cur, 0);
+
+  let score = 0;
+  for (const [property, weight] of Object.entries(weights)) {
+    const category = data.categories.find(c => c.name === property);
+    const highestScoreForCategory = Math.max(...Object.values(category.scoring));
+    const categoryScore = (state[property].score || 0) / highestScoreForCategory;
+    score += categoryScore * weight / totalWeight;
+  }
+
+  return Math.round(score * 10000) / 10000;
+}
+
+
 for (const state of data.states) {
-  state.score = ['voteByMail', 'votingCenters', 'rankedChoice', 'sameDayRegistration'].reduce((acc, cur) => acc + (state[cur].score || 0), 0);
+  state.score = calculateScore(state);
 }
 
 fs.writeFileSync(`${__dirname}/data.json`, stringify(data, {maxLength:1000}));

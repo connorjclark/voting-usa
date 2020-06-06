@@ -29,8 +29,8 @@
       const stateSpecificStyles = {};
       for (const state of data.states) {
         let fill;
-        if (state.score >= 4) fill = 'green';
-        else if (state.score >= 2) fill = 'yellow';
+        if (state.score >= 0.7) fill = 'green';
+        else if (state.score >= 0.2) fill = 'yellow';
         else fill = 'red';
         stateSpecificStyles[state.abbreviation] = { fill };
       }
@@ -72,7 +72,7 @@
         ],
         columns: [ // define the table columns
           { title: 'Name', field: 'name' },
-          { title: 'Score', field: 'score', align: 'left' },
+          { title: 'Score', field: 'score', align: 'left', formatter: cell => `${Math.floor(cell.getValue() * 100)}%` },
           { title: 'Vote By Mail', field: 'voteByMail', ...categoryCol },
           { title: 'Voting Centers', field: 'votingCenters', ...categoryCol },
           { title: 'Ranked Choice', field: 'rankedChoice', ...categoryCol },
@@ -80,7 +80,7 @@
         ],
       });
 
-      document.querySelector('#sources').innerHTML = data.sources.map(source => `${source.name}:<br>${source.text.replace(/\n/g, '<br>')}`).join('<br><br>');
+      document.querySelector('#sources').innerHTML = data.categories.map(c => `${c.name}:<br>${c.sources.replace(/\n/g, '<br>')}`).join('<br><br>');
     }
 
     main();
