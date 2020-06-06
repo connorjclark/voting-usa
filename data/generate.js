@@ -2,7 +2,10 @@ const fs = require('fs');
 const stringify = require("json-stringify-pretty-compact");
 const states = require('./states.json');
 
-const data = [...states];
+const data = {
+  states: [...states],
+  sources: [],
+}
 
 function partitionBy(arr, key) {
   const parts = [[]];
@@ -20,6 +23,7 @@ function collect(path) {
   const lines = fs.readFileSync(path, 'utf-8').split('\n').filter(Boolean);
   const parts = partitionBy(lines, '---');
   
+  const sources = parts[0].join('\n');
   const scoreData = parts[1];
   const stateData = parts[2];
 
@@ -29,7 +33,7 @@ function collect(path) {
     scoring[k] = Number(v);
   }
 
-  return stateData.map(text => {
+  const statesData = stateData.map(text => {
     let [, abbreviation, tags, notes] = text.match(/(\w\w) ?([^#]+)?#?(.*)?/);
     tags = tags ? tags.split(' ').filter(Boolean) : [];
     if (notes) notes = notes.trim();
@@ -41,11 +45,17 @@ function collect(path) {
       notes,
     };
   });
+
+  return {statesData, sources};
 }
 
 function process(property, path) {
-  for (const item of collect(path)) {
-    states.find(s => s.abbreviation === item.abbreviation)[property] = {
+  const {statesData, sources} = collect(path);
+
+  data.sources.push({name: property, text: sources});
+
+  for (const item of statesData) {
+    data.states.find(s => s.abbreviation === item.abbreviation)[property] = {
       score: item.score,
       tags: item.tags,
       notes: item.notes,
@@ -58,7 +68,7 @@ process('votingCenters', __dirname + '/vote-centers.txt');
 process('rankedChoice', __dirname + '/ranked-choice.txt');
 process('sameDayRegistration', __dirname + '/same-day-registration.txt');
 
-for (const state of data) {
+for (const state of data.states) {
   state.score = ['voteByMail', 'votingCenters', 'rankedChoice', 'sameDayRegistration'].reduce((acc, cur) => acc + state[cur].score, 0);
 }
 
