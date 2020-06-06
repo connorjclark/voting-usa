@@ -1,0 +1,64 @@
+https://www.ncsl.org/research/elections-and-campaigns/vote-centers.aspx
+
+---
+yes 1
+---
+AL
+AK
+AS
+AZ yes
+AR yes
+CA yes
+CO yes
+CT
+DE
+DC
+FM
+FL
+GA
+GU
+HI yes
+ID
+IL
+IN yes
+IA yes
+KS yes
+KY
+LA
+ME
+MH
+MD
+MA
+MI
+MN
+MS
+MO
+MT
+NE
+NV yes
+NH
+NJ
+NM yes
+NY
+NC
+ND yes
+MP
+OH
+OK
+OR
+PW
+PA
+PR
+RI
+SC
+SD yes
+TN yes
+TX yes
+UT yes
+VT
+VI
+VA
+WA
+WV
+WI
+WY yes

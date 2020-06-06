@@ -1,0 +1,71 @@
+https://www.fairvote.org/rcv
+
+- Statewide
+- Presidential
+- Presidential primary
+- Some cities
+
+---
+presidential-primary 1
+local-elections 2
+statewide 3
+---
+AL
+AK presidential-primary
+AS
+AZ
+AR
+CA local-elections
+CO local-elections
+CT
+DE
+DC
+FM
+FL local-elections
+GA
+GU
+HI
+ID
+IL
+IN
+IA
+KS presidential-primary
+KY
+LA
+ME
+MH
+MD local-elections
+MA local-elections
+MI local-elections
+MN statewide local-elections
+MS
+MO
+MT
+NE
+NV presidential-primary
+NH
+NJ
+NM local-elections
+NY local-elections
+NC
+ND
+MP
+OH
+OK
+OR local-elections
+PW
+PA
+PR
+RI
+SC
+SD
+TN local-elections
+TX
+UT local-elections
+VT
+VI
+VA
+WA
+WV
+WI
+WY presidential-primary

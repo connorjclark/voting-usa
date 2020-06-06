@@ -1,0 +1,9 @@
+{
+  "name": "voting-usa",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "json-stringify-pretty-compact": "^2.0.0"
+  }
+}
