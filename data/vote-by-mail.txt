@@ -1,0 +1,67 @@
+https://www.ncsl.org/research/elections-and-campaigns/all-mail-elections.aspx
+
+TODO more nuance here.
+
+---
+per-county 1
+yes 2
+---
+AL
+AK
+AS
+AZ
+AR
+CA per-county
+CO yes
+CT
+DE
+DC
+FM
+FL
+GA
+GU
+HI yes
+ID
+IL
+IN
+IA
+KS
+KY
+LA
+ME
+MH
+MD
+MA
+MI
+MN
+MS
+MO
+MT
+NE per-county # counties <10,000 may apply
+NV
+NH
+NJ
+NM
+NY
+NC
+ND per-county
+MP
+OH
+OK
+OR yes
+PW
+PA
+PR
+RI
+SC
+SD
+TN
+TX
+UT yes
+VT
+VI
+VA
+WA yes
+WV
+WI
+WY

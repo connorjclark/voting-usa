@@ -1,0 +1,64 @@
+https://www.ncsl.org/research/elections-and-campaigns/same-day-registration.aspx
+
+---
+yes 1
+---
+AL
+AK
+AS
+AZ
+AR
+CA yes
+CO yes
+CT yes
+DE
+DC yes
+FM
+FL
+GA
+GU
+HI yes
+ID yes
+IL yes
+IN
+IA yes
+KS
+KY
+LA
+ME
+MH
+MD yes
+MA yes
+MI yes
+MN yes
+MS
+MO
+MT yes
+NE
+NV yes
+NH yes
+NJ
+NM # yes starting January 1, 2021
+NY
+NC yes
+ND
+MP
+OH
+OK
+OR
+PW
+PA
+PR
+RI
+SC
+SD
+TN
+TX
+UT yes
+VT yes
+VI
+VA
+WA yes
+WV
+WI yes
+WY yes
