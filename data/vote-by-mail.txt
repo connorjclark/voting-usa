@@ -6,6 +6,7 @@ TODO more nuance here.
 per-county 1
 yes 2
 ---
+USAF yes
 AL
 AK
 AS

@@ -10,6 +10,7 @@ presidential-primary 1
 local-elections 2
 statewide 3
 ---
+USAF N/A
 AL
 AK presidential-primary
 AS
