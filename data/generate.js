@@ -71,6 +71,7 @@ function processFromFn(property, {getValueForState, sources, scoring}) {
     const score = scoring[value] || null;
     state[property] = {
       score,
+      tags: value ? [value] : undefined,
     };
   }
 }
