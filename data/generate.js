@@ -63,16 +63,63 @@ function process(property, path) {
   }
 }
 
+function processFromFn(property, {getValueForState, sources, scoring}) {
+  data.categories.push({name: property, sources, scoring});
+
+  for (const state of data.states) {
+    const value = getValueForState(state);
+    const score = scoring[value] || null;
+    state[property] = {
+      score,
+    };
+  }
+}
+
 process('voteByMail', __dirname + '/vote-by-mail.txt');
 process('votingCenters', __dirname + '/vote-centers.txt');
 process('rankedChoice', __dirname + '/ranked-choice.txt');
 process('sameDayRegistration', __dirname + '/same-day-registration.txt');
+
+// Generate some stuff from JSON.
+const mailData = require('./mail-ballots-data.json');
+processFromFn('processMailBallots', {
+  getValueForState(state) {
+    const data = mailData.summary.find(s => s.key === 'when_states_counting').values;
+    const dataForState = data.find(s => s.state === state.name || s.code === state.abbreviation);
+    if (!dataForState) return null;
+
+    return ['before-election-day', 'recieved', 'election-day'][dataForState.category];
+  },
+  scoring: {
+    'election-day': 1,
+    'before-election-day': 2,
+    'recieved': 3,
+  },
+  sources: 'https://www.cnn.com/interactive/2020/politics/mail-in-voting/',
+});
+
+processFromFn('arriveMailBallots', {
+  getValueForState(state) {
+    const data = mailData.summary.find(s => s.key === 'when_mailin').values;
+    const dataForState = data.find(s => s.state === state.name || s.code === state.abbreviation);
+    if (!dataForState) return null;
+
+    return ['recieved-by-election-day', 'postmarked-by-election-day'][dataForState.category];
+  },
+  scoring: {
+    'recieved-by-election-day': 1,
+    'postmarked-by-election-day': 2,
+  },
+  sources: 'https://www.cnn.com/interactive/2020/politics/mail-in-voting/',
+});
 
 const weights = {
   voteByMail: 5,
   rankedChoice: 4,
   sameDayRegistration: 3,
   votingCenters: 2,
+  processMailBallots: 1,
+  arriveMailBallots: 1,
 };
 function calculateScore(state) {
   const totalWeight = Object.values(weights).reduce((acc, cur) => acc + cur, 0);
