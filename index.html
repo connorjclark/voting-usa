@@ -47,8 +47,9 @@
           let val = '';
 
           val += cell.getValue().score;
-          if (cell.getValue().tags.length) {
-            val += ` (${cell.getValue().tags.join(', ')})`;
+          const tags = cell.getValue().tags || [];
+          if (tags.length) {
+            val += ` (${tags.join(', ')})`;
           }
           if (cell.getValue().notes) {
             val += '*';
