@@ -57,7 +57,7 @@ function collect(path) {
 
     if (notes) notes = notes.trim();
 
-    const value = tags[0];
+    const value = tags[0] || null;
     categoryResultsByState[shortCode] = {
       value,
       score: value ? (rubric[value] || null) : 0,
@@ -77,7 +77,7 @@ function process(categoryName, path) {
 
   results.categories[categoryName] = {
     name: categoryName,
-    weight: 1,
+    weight: 0, // Set later.
     rubric,
     sources,
   };
@@ -117,7 +117,7 @@ const mailData = require('./mail-ballots-data.json');
 processFromFn({
   category: {
     name: 'processMailBallots',
-    weight: 0,
+    weight: 0, // Set later.
     rubric: {
       'recieved': 1,
       'before-election-day': 0.5,
@@ -139,7 +139,7 @@ processFromFn({
 processFromFn({
   category: {
     name: 'arriveMailBallots',
-    weight: 0,
+    weight: 0, // Set later.
     rubric: {
       'postmarked-by-election-day': 1,
       'recieved-by-election-day': 0,
@@ -157,6 +157,7 @@ processFromFn({
   }
 });
 
+/** @type {Record<string, number>} */
 const weights = {
   voteByMail: 5,
   rankedChoice: 4,
@@ -165,6 +166,11 @@ const weights = {
   processMailBallots: 1,
   arriveMailBallots: 1,
 };
+
+for (const category of Object.values(results.categories)) {
+  if (!weights[category.name]) throw new Error('missing weight for ' + category);
+  category.weight = weights[category.name];
+}
 
 /**
  * @param {Voting.State} state

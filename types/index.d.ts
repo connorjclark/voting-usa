@@ -13,7 +13,7 @@ declare global {
     }
 
     interface CategoryResult {
-      value: string;
+      value: string|null;
       score: number|null;
       notes?: string;
     }
