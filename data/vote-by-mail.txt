@@ -4,7 +4,7 @@ TODO more nuance here.
 
 ---
 per-county 1
-yes 2
+yes 0.9
 ---
 USAF yes
 AL
