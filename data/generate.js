@@ -47,6 +47,11 @@ function collect(path) {
     rubric[k] = Number(v);
   }
 
+  const defaultValue = Object.entries(rubric).reduce((min, cur) => {
+    if (min[1] > cur[1]) return cur;
+    return min;
+  })[0];
+
   /** @type {Record<string, Voting.CategoryResult>} */
   const categoryResultsByState = {};
   for (const text of stateData) {
@@ -57,10 +62,16 @@ function collect(path) {
 
     if (notes) notes = notes.trim();
 
-    const value = tags[0] || null;
+    let value;
+    if (tags[0] === 'N/A') value = null;
+    else if (tags[0]) value = tags[0];
+    else value = defaultValue;
+    
+    if (value !== null && rubric[value] === undefined) throw new Error('bad value');
+
     categoryResultsByState[shortCode] = {
       value,
-      score: value ? (rubric[value] || null) : 0,
+      score: value ? rubric[value] : 0,
       notes,
     };
   }

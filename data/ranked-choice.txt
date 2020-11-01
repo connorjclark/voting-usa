@@ -9,6 +9,7 @@ https://www.fairvote.org/rcv
 presidential-primary 1
 local-elections 0.6
 statewide 0.3
+no 0
 ---
 USAF N/A
 AL
