@@ -2,12 +2,22 @@ const fs = require('fs');
 const stringify = require("json-stringify-pretty-compact");
 const states = require('./states.json');
 
-const data = {
-  states: [...states],
-  categories: [],
+/** @type {Voting.Results} */
+const results = {
+  states: states.map(state => ({
+    ...state,
+    score: 0, // Calculated later.
+    data: {},
+  })),
+  categories: {},
 }
 
+/**
+ * @param {string[]} arr
+ * @param {string} key
+ */
 function partitionBy(arr, key) {
+  /** @type {string[][]} */
   const parts = [[]];
   for (const item of arr) {
     if (item === key) {
@@ -19,6 +29,9 @@ function partitionBy(arr, key) {
   return parts;
 }
 
+/**
+ * @param {string} path
+ */
 function collect(path) {
   const lines = fs.readFileSync(path, 'utf-8').split('\n').filter(Boolean);
   const parts = partitionBy(lines, '---');
@@ -27,51 +40,68 @@ function collect(path) {
   const scoreData = parts[1];
   const stateData = parts[2];
 
-  const scoring = {};
+  /** @type {Voting.Rubric} */
+  const rubric = {};
   for (const item of scoreData) {
-    const [k,v] = item.split(' ');
-    scoring[k] = Number(v);
+    const [k, v] = item.split(' ');
+    rubric[k] = Number(v);
   }
 
-  const statesData = stateData.map(text => {
-    let [, abbreviation, tags, notes] = text.match(/(\w{2,4}) ?([^#]+)?#?(.*)?/);
-    tags = tags ? tags.split(' ').filter(Boolean) : [];
+  /** @type {Record<string, Voting.CategoryResult>} */
+  const categoryResultsByState = {};
+  for (const text of stateData) {
+    let [, shortCode, tagsString, notes] = text.match(/(\w{2,4}) ?([^#]+)?#?(.*)?/) || [];
+    const tags = tagsString ? tagsString.split(' ').filter(Boolean) : [];
+    // ?
+    // if (tags.length > 1) throw new Error('TODO rm');
+
     if (notes) notes = notes.trim();
 
-    return {
-      abbreviation,
-      score: tags.reduce((acc, cur) => acc + scoring[cur], 0),
-      tags,
+    const value = tags[0];
+    categoryResultsByState[shortCode] = {
+      value,
+      score: value ? (rubric[value] || null) : 0,
       notes,
     };
-  });
+  }
 
-  return {statesData, sources, scoring};
+  return {categoryResultsByState, sources, rubric};
 }
 
-function process(property, path) {
-  const {statesData, sources, scoring} = collect(path);
+/**
+ * @param {string} categoryName
+ * @param {string} path
+ */
+function process(categoryName, path) {
+  const {categoryResultsByState, sources, rubric} = collect(path);
 
-  data.categories.push({name: property, sources, scoring});
+  results.categories[categoryName] = {
+    name: categoryName,
+    weight: 1,
+    rubric,
+    sources,
+  };
 
-  for (const item of statesData) {
-    data.states.find(s => s.abbreviation === item.abbreviation)[property] = {
-      score: item.score,
-      tags: item.tags,
-      notes: item.notes,
-    };
+  for (const [shortCode, categoryResult] of Object.entries(categoryResultsByState)) {
+    const state = results.states.find(s => s.shortCode === shortCode);
+    if (!state) throw new Error('state not found: ' + shortCode);
+
+    state.data[categoryName] = categoryResult;
   }
 }
 
-function processFromFn(property, {getValueForState, sources, scoring}) {
-  data.categories.push({name: property, sources, scoring});
+/**
+ * @param {{category: Voting.Category, getValueForState: Function}} param1
+ */
+function processFromFn({category, getValueForState}) {
+  results.categories[category.name] = category;
 
-  for (const state of data.states) {
+  for (const state of results.states) {
     const value = getValueForState(state);
-    const score = scoring[value] || null;
-    state[property] = {
-      score,
-      tags: value ? [value] : undefined,
+    const score = category.rubric[value];
+    state.data[category.name] = {
+      value,
+      score: score !== undefined ? score : null,
     };
   }
 }
@@ -83,35 +113,48 @@ process('sameDayRegistration', __dirname + '/same-day-registration.txt');
 
 // Generate some stuff from JSON.
 const mailData = require('./mail-ballots-data.json');
-processFromFn('processMailBallots', {
+
+processFromFn({
+  category: {
+    name: 'processMailBallots',
+    weight: 0,
+    rubric: {
+      'recieved': 1,
+      'before-election-day': 0.5,
+      'election-day': 0,
+    },
+    sources: 'https://www.cnn.com/interactive/2020/politics/mail-in-voting/',
+  },
+  /** @param {Voting.State} state */
   getValueForState(state) {
+    // @ts-ignore
     const data = mailData.summary.find(s => s.key === 'when_states_counting').values;
-    const dataForState = data.find(s => s.state === state.name || s.code === state.abbreviation);
+    const dataForState = data.find(s => s.state === state.name || s.code === state.shortCode);
     if (!dataForState) return null;
 
     return ['before-election-day', 'recieved', 'election-day'][dataForState.category];
-  },
-  scoring: {
-    'election-day': 1,
-    'before-election-day': 2,
-    'recieved': 3,
-  },
-  sources: 'https://www.cnn.com/interactive/2020/politics/mail-in-voting/',
+  }
 });
 
-processFromFn('arriveMailBallots', {
+processFromFn({
+  category: {
+    name: 'arriveMailBallots',
+    weight: 0,
+    rubric: {
+      'postmarked-by-election-day': 1,
+      'recieved-by-election-day': 0,
+    },
+    sources: 'https://www.cnn.com/interactive/2020/politics/mail-in-voting/',
+  },
+  /** @param {Voting.State} state */
   getValueForState(state) {
+    // @ts-ignore
     const data = mailData.summary.find(s => s.key === 'when_mailin').values;
-    const dataForState = data.find(s => s.state === state.name || s.code === state.abbreviation);
+    const dataForState = data.find(s => s.state === state.name || s.code === state.shortCode);
     if (!dataForState) return null;
 
     return ['recieved-by-election-day', 'postmarked-by-election-day'][dataForState.category];
-  },
-  scoring: {
-    'recieved-by-election-day': 1,
-    'postmarked-by-election-day': 2,
-  },
-  sources: 'https://www.cnn.com/interactive/2020/politics/mail-in-voting/',
+  }
 });
 
 const weights = {
@@ -122,23 +165,37 @@ const weights = {
   processMailBallots: 1,
   arriveMailBallots: 1,
 };
-function calculateScore(state) {
+
+/**
+ * @param {Voting.State} state
+ */
+function calculateStateScore(state) {
   const totalWeight = Object.values(weights).reduce((acc, cur) => acc + cur, 0);
 
   let score = 0;
-  for (const [property, weight] of Object.entries(weights)) {
-    const category = data.categories.find(c => c.name === property);
-    const highestScoreForCategory = Math.max(...Object.values(category.scoring));
-    const categoryScore = (state[property].score || 0) / highestScoreForCategory;
+  for (const [name, weight] of Object.entries(weights)) {
+    const category = results.categories[name];
+    const highestScoreForCategory = Math.max(...Object.values(category.rubric));
+    const categoryScore = (state.data[name].score || 0) / highestScoreForCategory;
     score += categoryScore * weight / totalWeight;
   }
 
   return Math.round(score * 10000) / 10000;
 }
 
-
-for (const state of data.states) {
-  state.score = calculateScore(state);
+for (const state of results.states) {
+  state.score = calculateStateScore(state);
 }
 
-fs.writeFileSync(`${__dirname}/data.json`, stringify(data, {maxLength:1000}));
+const errors = [];
+for (const category of Object.values(results.categories)) {
+  for (const score of Object.values(category.rubric)) {
+    if (score < 0 || score > 1) errors.push(`invalid score of ${score} in ${category.name} rubric`);
+  }
+}
+
+if (errors.length > 0) {
+  throw new Error(errors.join('\n'));
+}
+
+fs.writeFileSync(`${__dirname}/data.json`, stringify(results, {maxLength:1000}));

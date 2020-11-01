@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "checkJs": true,
+    "allowJs": true,
+    "moduleResolution": "node",
+    "target": "ES2019",
+    "strict": true,
+    "diagnostics": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+  },
+  "include": [
+    "types/*",
+    "data/*",
+    "main.js",
+  ]
+}
