@@ -22,11 +22,8 @@ async function main() {
     formatter: cell => {
       let val = '';
 
-      val += cell.getValue().score;
-      const tags = cell.getValue().tags || [];
-      if (tags.length) {
-        val += ` (${tags.join(', ')})`;
-      }
+      val += cell.getValue().value;
+      val += ` (${cell.getValue().score})`;
       if (cell.getValue().notes) {
         val += '*';
       }
