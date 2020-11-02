@@ -171,24 +171,6 @@ processFromFn({
   }
 });
 
-/*Maryland Maryland
-New Jersey New Jersey
-Illinois Illinois
-Hawaii Hawaii
-Washington (state) Washington
-Massachusetts Massachusetts
-Washington, D.C. District of Columbia
-Vermont Vermont
-California California
-Rhode Island Rhode Island
-New York (state) New York
-Connecticut Connecticut
-Colorado Colorado
-Delaware Delaware
-New Mexico New Mexico
-Oregon Oregon
-*/
-
 processFromFn({
   category: {
     name: 'nationalPopularVote',

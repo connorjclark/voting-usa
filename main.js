@@ -1,3 +1,10 @@
+const COLORS = {
+  GREEN: '#52AD52',
+  LIGHT_GREEN: '#9DF79D',
+  YELLOW: 'yellow',
+  RED: '#FF7171',
+};
+
 const positions = [{
   "state": "Alabama",
   "code": "AL",
@@ -260,9 +267,9 @@ const positions = [{
  */
 function getColorForScore(score) {
   let color;
-  if (score >= 0.7) color = 'green';
-  else if (score >= 0.2) color = 'yellow';
-  else color = 'red';
+  if (score >= 0.7) color = COLORS.GREEN;
+  else if (score >= 0.2) color = COLORS.YELLOW;
+  else color = COLORS.RED;
   return color;
 }
 
@@ -288,9 +295,9 @@ function renderCategory(results, categoryName) {
 
   // @ts-ignore
   const colors = {
-    2: ['green', 'red'],
-    3: ['green', 'yellow', 'red'],
-    4: ['green', 'lightgreen', 'yellow', 'red'],
+    2: [COLORS.GREEN, COLORS.RED],
+    3: [COLORS.GREEN, COLORS.YELLOW, COLORS.RED],
+    4: [COLORS.GREEN, COLORS.LIGHT_GREEN, COLORS.YELLOW, COLORS.RED],
   }[rubric.length];
   if (!colors) {
     throw new Error('TODO');
@@ -345,7 +352,7 @@ function renderCategory(results, categoryName) {
     if (d.value === null) return 'lightgrey';
 
     const rank = rubric.findIndex(r => r[0] === d.value);
-    return colors[rank] || 'red';
+    return colors[rank] || COLORS.RED;
   });//.on('click', selectState);
 
   // Draw labels for states
