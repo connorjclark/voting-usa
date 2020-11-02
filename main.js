@@ -1,8 +1,8 @@
 const COLORS = {
-  GREEN: '52AD52',
-  LIGHT_GREEN: '9DF79D',
-  YELLOW: COLORS.YELLOW,
-  RED: 'FF7171',
+  GREEN: '#52AD52',
+  LIGHT_GREEN: '#9DF79D',
+  YELLOW: 'yellow',
+  RED: '#FF7171',
 };
 
 const positions = [{
