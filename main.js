@@ -288,7 +288,7 @@ function renderCategory(results, categoryName) {
 
   // @ts-ignore
   const colors = {
-    2: ['green', 'yellow'],
+    2: ['green', 'red'],
     3: ['green', 'yellow', 'red'],
     4: ['green', 'lightgreen', 'yellow', 'red'],
   }[rubric.length];
