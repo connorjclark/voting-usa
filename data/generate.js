@@ -171,6 +171,58 @@ processFromFn({
   }
 });
 
+/*Maryland Maryland
+New Jersey New Jersey
+Illinois Illinois
+Hawaii Hawaii
+Washington (state) Washington
+Massachusetts Massachusetts
+Washington, D.C. District of Columbia
+Vermont Vermont
+California California
+Rhode Island Rhode Island
+New York (state) New York
+Connecticut Connecticut
+Colorado Colorado
+Delaware Delaware
+New Mexico New Mexico
+Oregon Oregon
+*/
+
+processFromFn({
+  category: {
+    name: 'nationalPopularVote',
+    weight: 0, // Set later.
+    rubric: {
+      yes: 1,
+      no: 0,
+    },
+    sources: 'https://en.wikipedia.org/wiki/National_Popular_Vote_Interstate_Compact',
+  },
+  /** @param {Voting.State} state */
+  getValueForState(state) {
+    if (state.shortCode === 'USAF') return null;
+
+    return [
+      'New Jersey',
+      'Illinois',
+      'Hawaii',
+      'Washington',
+      'Massachusetts',
+      'District Of Columbia',
+      'Vermont',
+      'California',
+      'Rhode Island',
+      'New York',
+      'Connecticut',
+      'Colorado',
+      'Delaware',
+      'New Mexico',
+      'Oregon',
+    ].includes(state.name) ? 'yes' : 'no';
+  }
+})
+
 /** @type {Record<string, number>} */
 const weights = {
   voteByMail: 5,
@@ -179,10 +231,11 @@ const weights = {
   votingCenters: 2,
   processMailBallots: 1,
   arriveMailBallots: 1,
+  nationalPopularVote: 0.5,
 };
 
 for (const category of Object.values(results.categories)) {
-  if (!weights[category.name]) throw new Error('missing weight for ' + category);
+  if (!weights[category.name]) throw new Error('missing weight for ' + category.name);
   category.weight = weights[category.name];
 }
 
