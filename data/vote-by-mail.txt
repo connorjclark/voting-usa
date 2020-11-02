@@ -1,6 +1,6 @@
 https://www.ncsl.org/research/elections-and-campaigns/all-mail-elections.aspx
 
-TODO more nuance here.
+TODO more nuance here. ex: TX allows vote by mail with excuse, and valid excuse isn't hard to make.
 
 ---
 per-county 1

@@ -35,7 +35,7 @@ function partitionBy(arr, key) {
 function collect(path) {
   const lines = fs.readFileSync(path, 'utf-8').split('\n').filter(Boolean);
   const parts = partitionBy(lines, '---');
-  
+
   const sources = parts[0].join('\n');
   const scoreData = parts[1];
   const stateData = parts[2];
@@ -66,7 +66,7 @@ function collect(path) {
     if (tags[0] === 'N/A') value = null;
     else if (tags[0]) value = tags[0];
     else value = defaultValue;
-    
+
     if (value !== null && rubric[value] === undefined) throw new Error('bad value');
 
     categoryResultsByState[shortCode] = {
@@ -76,7 +76,12 @@ function collect(path) {
     };
   }
 
-  return {categoryResultsByState, sources, rubric};
+  for (const shortCode of Object.keys(categoryResultsByState)) {
+    const state = results.states.find(s => s.shortCode === shortCode);
+    if (!state) throw new Error('state not found: ' + shortCode);
+  }
+
+  return { categoryResultsByState, sources, rubric };
 }
 
 /**
@@ -84,7 +89,7 @@ function collect(path) {
  * @param {string} path
  */
 function process(categoryName, path) {
-  const {categoryResultsByState, sources, rubric} = collect(path);
+  const { categoryResultsByState, sources, rubric } = collect(path);
 
   results.categories[categoryName] = {
     name: categoryName,
@@ -93,10 +98,8 @@ function process(categoryName, path) {
     sources,
   };
 
-  for (const [shortCode, categoryResult] of Object.entries(categoryResultsByState)) {
-    const state = results.states.find(s => s.shortCode === shortCode);
-    if (!state) throw new Error('state not found: ' + shortCode);
-
+  for (const state of results.states) {
+    const categoryResult = categoryResultsByState[state.shortCode] || { value: null, score: null };
     state.data[categoryName] = categoryResult;
   }
 }
@@ -104,7 +107,7 @@ function process(categoryName, path) {
 /**
  * @param {{category: Voting.Category, getValueForState: Function}} param1
  */
-function processFromFn({category, getValueForState}) {
+function processFromFn({ category, getValueForState }) {
   results.categories[category.name] = category;
 
   for (const state of results.states) {
@@ -204,6 +207,11 @@ for (const state of results.states) {
   state.score = calculateStateScore(state);
 }
 
+// Don't show these for now. Maybe just remove entirely.
+results.states = results.states.filter(state => {
+  return !['AS', 'GU', 'MP', 'PW', 'FM', 'MH', 'PR', 'VI'].includes(state.shortCode);
+});
+
 const errors = [];
 for (const category of Object.values(results.categories)) {
   for (const score of Object.values(category.rubric)) {
@@ -215,4 +223,4 @@ if (errors.length > 0) {
   throw new Error(errors.join('\n'));
 }
 
-fs.writeFileSync(`${__dirname}/data.json`, stringify(results, {maxLength:1000}));
+fs.writeFileSync(`${__dirname}/data.json`, stringify(results, { maxLength: 1000 }));
