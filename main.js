@@ -434,6 +434,11 @@ async function main() {
   /** @type {Voting.Results} */
   const results = await fetch('data/data.json').then(r => r.json());
 
+  const rubricHtml = Object.values(results.categories).map(category => {
+    return `${category.name} - Weight: ${category.weight}`;
+  }).join('<br>') + '<br><br>(arbitrary weightings, needs tuning)';
+  document.querySelector('#rubric').innerHTML = rubricHtml;
+
   for (const categoryName of Object.keys(results.categories)) {
     renderCategory(results, categoryName);
   }
