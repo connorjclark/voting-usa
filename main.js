@@ -308,8 +308,8 @@ function renderCategory(results, categoryName) {
   });
 
   // Legend text
-  legend.append('p').html(function (d) {
-    return d[0];
+  legend.append('p').html(function ([name]) {
+    return `${name} (${results.categories[categoryName].rubric[name]})`;
   });
 
   // Draw svg
